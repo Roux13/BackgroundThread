@@ -43,12 +43,6 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.text);
         imageView = findViewById(R.id.imageView);
 
-        if (isInternetAvailable()) {
-            Log.d(TAG, "Internet is available");
-        } else {
-            Log.d(TAG, "Internet is not available");
-        }
-
         Log.d(TAG, "Before starting thread");
         thread = new Thread(() -> {
             Log.d(TAG, "Loading thread is started");
@@ -75,11 +69,16 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap loadImageFromNetwork(String textUrl) {
         Log.d(TAG, "Into method loadImageNetwork");
         Bitmap bitmap = null;
+        InputStream inputStream = null;
         try {
             URL url = new URL(textUrl);
+            Log.d(TAG, "Url passed");
             URLConnection connection = url.openConnection();
-            InputStream inputStream = connection.getInputStream();
+            Log.d(TAG, "URLConnection passed");
+            inputStream = (InputStream) connection.getInputStream();
+            Log.d(TAG, "InputStream passed");
             bitmap = BitmapFactory.decodeStream(inputStream);
+            Log.d(TAG, "BitmapFactory passed");
         } catch (UnknownHostException e) {
             Log.d(TAG, "UnknownHostException");
             e.printStackTrace();
@@ -88,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         Log.d(TAG, "After bitmap downloading");
         return bitmap;
@@ -116,15 +123,5 @@ public class MainActivity extends AppCompatActivity {
     public void stopThread(View view) {
         Toast.makeText(this, "Stopped", Toast.LENGTH_SHORT).show();
         thread.interrupt();
-    }
-
-    public boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("google.com");
-            return !ipAddr.equals("");
-
-        } catch (Exception e) {
-            return false;
-        }
     }
 }
