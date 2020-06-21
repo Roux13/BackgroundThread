@@ -6,7 +6,6 @@ public class TestRunnable implements Runnable {
 
     private static final String TAG = TestRunnable.class.getName();
 
-
     private int times;
 
     public TestRunnable(int times) {
